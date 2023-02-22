@@ -1,20 +1,15 @@
 import { ASTWriter, SrcDesc } from 'solc-typed-ast';
 import { CairoAssert } from '../../ast/cairoNodes';
 import { CairoASTNodeWriter } from '../base';
-import { INDENT } from '../utils';
 
 export class CairoAssertWriter extends CairoASTNodeWriter {
   writeInner(node: CairoAssert, writer: ASTWriter): SrcDesc {
-    const assertExpr = `assert ${writer.write(node.vExpression)} = 1;`;
+    const expression = writer.write(node.vExpression);
 
     if (node.assertMessage === null) {
-      return [assertExpr];
+      return [`assert( ${expression} = 1 );`];
     } else {
-      return [
-        [`with_attr error_message("${node.assertMessage}"){`, `${INDENT}${assertExpr}`, `}`].join(
-          '\n',
-        ),
-      ];
+      return [`assert( ${expression} = 1, "${node.assertMessage}" );`];
     }
   }
 }

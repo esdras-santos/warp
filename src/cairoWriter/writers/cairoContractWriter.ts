@@ -98,19 +98,17 @@ export class CairoContractWriter extends CairoASTNodeWriter {
       '}',
     ].join('\n');
 
+    const contractHeader = '#[contract] \n' + `mod ${node.name} {`;
+
     return [
-      [
-        documentation,
-        ...events,
-        `namespace ${node.name}{\n\n${body}\n\n}`,
-        outsideNamespaceBody,
-        storageCode,
-      ].join('\n\n'),
+      [contractHeader, documentation, ...events, body, outsideNamespaceBody, storageCode, `}`].join(
+        '\n\n',
+      ),
     ];
   }
 
   writeWhole(node: CairoContract, writer: ASTWriter): SrcDesc {
-    return [`// Contract Def ${node.name}\n\n${this.writeInner(node, writer)}`];
+    return [`${this.writeInner(node, writer)}`];
   }
 
   private writeContractInterface(node: CairoContract, writer: ASTWriter): SrcDesc {
