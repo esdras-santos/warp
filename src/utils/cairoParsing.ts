@@ -27,7 +27,9 @@ export function getRawCairoFunctionInfo(rawFunction: string): RawCairoFunctionIn
   // Todo: Update match so implicit can be empty and there is a version of them without keys
   const funcSignature =
     rawFunction.match(/func (?<name>\w+)\s*[{](?<implicits>.+)[}]/is) ??
-    rawFunction.match(/func (?<name>\w+)\s*/);
+    rawFunction.match(/func (?<name>\w+)\s*/) ??
+    rawFunction.match(/fn (?<name>\w+)\s*[{](?<implicits>.+)[}]/is) ??
+    rawFunction.match(/fn (?<name>\w+)\s*/);
 
   assert(
     funcSignature !== null && funcSignature.groups !== undefined,

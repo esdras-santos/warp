@@ -36,8 +36,6 @@ export class MappingIndexAccessGen extends CairoUtilFuncGenBase {
   }
 
   public gen(node: IndexAccess): FunctionCall {
-    console.log('gen in ', 'MappingIndexAccessGen ');
-
     const base = node.vBaseExpression;
     let index = node.vIndexExpression;
     assert(index !== undefined);
@@ -136,16 +134,15 @@ export class MappingIndexAccessGen extends CairoUtilFuncGenBase {
     return {
       name: funcName,
       code: [
-        `func ${funcName}{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(name: felt, index: ${indexTypeString}) -> (res: felt){`,
-        `    alloc_locals;`,
-        `    let (existing) = ${mappingName}.read(name, index);`,
-        `    if (existing == 0){`,
-        `        let (used) = WARP_USED_STORAGE.read();`,
-        `        WARP_USED_STORAGE.write(used + ${valueCairoType.width});`,
-        `        ${mappingName}.write(name, index, used);`,
-        `        return (used,);`,
-        `    }else{`,
-        `        return (existing,);`,
+        `fn ${funcName}(name: felt, index: ${indexTypeString}) -> felt {`,
+        `    let existing = ${mappingName}::read(name, index);`,
+        `    if existing == 0 {`,
+        `        let used = WARP_USED_STORAGE::read();`,
+        `        WARP_USED_STORAGE::write(used + ${valueCairoType.width});`,
+        `        ${mappingName}::write(name, index, used);`,
+        `        used`,
+        `    } else {`,
+        `        existing`,
         `    }`,
         `}`,
       ].join('\n'),
