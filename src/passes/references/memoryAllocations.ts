@@ -81,7 +81,8 @@ export class MemoryAllocations extends ReferenceSubPass {
 
     const funcImport = ast.registerImport(
       node,
-      ...WM_NEW,
+      ['array'],
+      'ArrayTrait',
       [
         ['len', createUint256TypeName(ast)],
         ['elemWidth', createUint256TypeName(ast)],

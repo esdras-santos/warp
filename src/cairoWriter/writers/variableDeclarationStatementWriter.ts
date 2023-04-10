@@ -1,5 +1,6 @@
 import assert from 'assert';
 import {
+  ArrayType,
   ASTWriter,
   DataLocation,
   FunctionCall,
@@ -41,6 +42,8 @@ export class VariableDeclarationStatementWriter extends CairoASTNodeWriter {
       assert(declaration !== undefined, `Unable to find variable declaration for assignment ${id}`);
       return declaration;
     };
+    const nodeType = generalizeType(getValueN(0))[0];
+    let isArray = nodeType instanceof ArrayType;
 
     const declarations = node.assignments.flatMap((id, index) => {
       const type = generalizeType(getValueN(index))[0];
@@ -76,7 +79,12 @@ export class VariableDeclarationStatementWriter extends CairoASTNodeWriter {
       ];
     }
     return [
-      [documentation, `let ${declarations[0]} = ${writer.write(node.vInitialValue)};`].join('\n'),
+      [
+        documentation,
+        `let ${isArray ? 'mut ' : ''}${declarations[0]} = ${
+          isArray ? `ArrayTrait::new()` : writer.write(node.vInitialValue)
+        };`,
+      ].join('\n'),
     ];
   }
 }
